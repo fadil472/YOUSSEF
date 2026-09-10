@@ -1,0 +1,6 @@
+{
+  "name": "Obsidian Vortex Notes",
+  "description": "تطبيق هاتف مستوحى من أوبسيديان لإدارة المهام المتكررة والمهام الدورية (الدوامة الراجعة لنقطة الصفر) مع إحصائيات بيانية متكاملة لنسب الالتزام والغياب",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
