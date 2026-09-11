@@ -114,6 +114,24 @@ export default function App() {
     );
   };
 
+  // Increment/decrement task count for today (for numeric tasks)
+  const handleIncrementTaskToday = (taskId: string, delta: number) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t;
+        const current = t.history[todayStr]?.count ?? 0;
+        const step = t.step || 1;
+        const next = Math.max(0, Math.min(t.targetCount, current + delta));
+        const completed = next >= t.targetCount;
+        return {
+          ...t,
+          currentCountToday: next,
+          history: { ...t.history, [todayStr]: { completed, count: next } },
+        };
+      })
+    );
+  };
+
   // Toggle task for any specific historical date
   const handleToggleTaskForDate = (taskId: string, dateStr: string) => {
     setTasks((prev) =>
@@ -285,6 +303,7 @@ export default function App() {
           tasks={tasks}
           onToggleTaskToday={handleToggleTaskToday}
           onResetTaskToZero={handleResetTaskToZero}
+          onIncrementTaskToday={handleIncrementTaskToday}
           onOpenAddTask={() => setIsAddTaskOpen(true)}
           onSelectNote={handleSelectNoteByTitle}
           notes={notes}
