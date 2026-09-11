@@ -13,6 +13,15 @@ export interface RecurringTask {
   linkedNoteTitle?: string;
   createdAt: string; // YYYY-MM-DD
   history: Record<string, { completed: boolean; count: number; note?: string }>; // date string 'YYYY-MM-DD' -> status
+  
+  /** أيام النشاط للتكرار الأسبوعي/المخصص: 0=الأحد ... 6=السبت */
+  activeDays?: number[];
+  
+  /** وحدة العد: 'دقيقة'، 'كلمة'... */
+  unit?: string;
+  
+  /** مقدار الزيادة لكل ضغطة (افتراضي 1) */
+  step?: number;
 }
 
 export interface ObsidianNote {

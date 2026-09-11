@@ -98,49 +98,43 @@ export const StatsDashboardView: React.FC<StatsDashboardViewProps> = ({ tasks, o
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto bg-[#0f1118] p-4 pb-24 select-none">
-      {/* View Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <span className="text-[11px] font-semibold text-violet-400 flex items-center gap-1">
-            <BarChart3 size={13} />
-            إحصائيات ومبيانات الالتزام
-          </span>
-          <h1 className="text-xl font-bold text-zinc-100 mt-0.5">مؤشرات الأداء بكل الأنواع</h1>
-        </div>
+      {/* View Header - Simplified */}
+      <div className="mb-4">
+        <h1 className="text-xl font-bold text-zinc-100">إحصائيات الالتزام</h1>
+      </div>
 
-        {/* Time Range Filter */}
-        <div className="flex items-center bg-zinc-900/90 rounded-xl p-0.5 border border-zinc-800 text-xs">
-          <button
-            onClick={() => setTimeRange(7)}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              timeRange === 7
-                ? 'bg-violet-600 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            7 أيام
-          </button>
-          <button
-            onClick={() => setTimeRange(14)}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              timeRange === 14
-                ? 'bg-violet-600 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            14 يوم
-          </button>
-          <button
-            onClick={() => setTimeRange(30)}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              timeRange === 30
-                ? 'bg-violet-600 text-white shadow-sm'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            30 يوم
-          </button>
-        </div>
+      {/* Time Range Filter - Compact */}
+      <div className="flex items-center bg-zinc-900/90 rounded-xl p-0.5 border border-zinc-800 text-xs mb-4 w-fit">
+        <button
+          onClick={() => setTimeRange(7)}
+          className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+            timeRange === 7
+              ? 'bg-violet-600 text-white shadow-sm'
+              : 'text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          7 أيام
+        </button>
+        <button
+          onClick={() => setTimeRange(14)}
+          className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+            timeRange === 14
+              ? 'bg-violet-600 text-white shadow-sm'
+              : 'text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          14 يوم
+        </button>
+        <button
+          onClick={() => setTimeRange(30)}
+          className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+            timeRange === 30
+              ? 'bg-violet-600 text-white shadow-sm'
+              : 'text-zinc-400 hover:text-zinc-200'
+          }`}
+        >
+          30 يوم
+        </button>
       </div>
 
       {/* Primary KPI Cards Grid */}

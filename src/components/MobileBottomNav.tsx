@@ -2,11 +2,11 @@ import React from 'react';
 import {
   RotateCcw,
   BarChart3,
-  FileText,
   Calendar,
+  BookOpen,
 } from 'lucide-react';
 
-export type MobileTab = 'today' | 'stats' | 'notes' | 'calendar';
+export type MobileTab = 'today' | 'stats' | 'calendar' | 'plan';
 
 interface MobileBottomNavProps {
   activeTab: MobileTab;
@@ -55,19 +55,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         <span className="text-[10px]">المبيانات</span>
       </button>
 
-      {/* 3. Obsidian Notes Tab */}
-      <button
-        id="nav-tab-notes"
-        onClick={() => onChangeTab('notes')}
-        className={`flex flex-col items-center justify-center gap-1 transition-all ${
-          activeTab === 'notes' ? 'text-violet-400 font-bold' : 'text-zinc-400 hover:text-zinc-200'
-        }`}
-      >
-        <FileText size={20} />
-        <span className="text-[10px]">الملاحظات</span>
-      </button>
-
-      {/* 4. Calendar History Log Tab */}
+      {/* 3. Calendar History Log Tab */}
       <button
         id="nav-tab-calendar"
         onClick={() => onChangeTab('calendar')}
@@ -77,6 +65,18 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       >
         <Calendar size={20} />
         <span className="text-[10px]">السجل</span>
+      </button>
+
+      {/* 4. Plan Tab */}
+      <button
+        id="nav-tab-plan"
+        onClick={() => onChangeTab('plan')}
+        className={`flex flex-col items-center justify-center gap-1 transition-all ${
+          activeTab === 'plan' ? 'text-violet-400 font-bold' : 'text-zinc-400 hover:text-zinc-200'
+        }`}
+      >
+        <BookOpen size={20} />
+        <span className="text-[10px]">الخطة</span>
       </button>
     </nav>
   );

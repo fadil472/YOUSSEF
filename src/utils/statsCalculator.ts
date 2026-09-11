@@ -1,5 +1,6 @@
 import { RecurringTask, OverallStats, DayCommitment, TaskCommitmentStat } from '../types';
 import { formatDate, getPastDates } from '../data/starterData';
+import { isTaskScheduledOnDate } from './taskScheduler';
 
 const ARABIC_DAYS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
 
@@ -31,17 +32,16 @@ export function calculateOverallStats(tasks: RecurringTask[], daysRange = 30): O
   dates.forEach((date) => {
     // If today, only count tasks checked so far
     let dayCompleted = 0;
+    let dayScheduled = 0;
     tasks.forEach((t) => {
-      const rec = t.history[date];
-      if (rec?.completed) {
-        dayCompleted += 1;
-        totalCommittedUnits += 1;
-      } else {
-        totalMissedUnits += 1;
-      }
+      if (!isTaskScheduledOnDate(t, date)) return; // ← إضافة هذا
+      dayScheduled += 1;
+      if (t.history[date]?.completed) { dayCompleted += 1; totalCommittedUnits += 1; }
+      else { totalMissedUnits += 1; }
     });
+    if (dayScheduled === 0) return; // يوم بلا مهام مبرمجة
 
-    const dayRate = dayCompleted / tasks.length;
+    const dayRate = dayCompleted / dayScheduled;
     if (dayRate >= 0.6) {
       committedDaysCount += 1;
     } else {
@@ -61,10 +61,14 @@ export function calculateOverallStats(tasks: RecurringTask[], daysRange = 30): O
   const reversedDates = [...dates].reverse();
   for (const date of reversedDates) {
     let dayCompleted = 0;
+    let dayScheduled = 0;
     tasks.forEach((t) => {
+      if (!isTaskScheduledOnDate(t, date)) return;
+      dayScheduled += 1;
       if (t.history[date]?.completed) dayCompleted += 1;
     });
-    if (dayCompleted / tasks.length >= 0.5) {
+    if (dayScheduled === 0) { tempStreak = 0; return; }
+    if (dayCompleted / dayScheduled >= 0.5) {
       tempStreak += 1;
       if (tempStreak > longestStreak) longestStreak = tempStreak;
     } else {
@@ -77,8 +81,9 @@ export function calculateOverallStats(tasks: RecurringTask[], daysRange = 30): O
   if (currentStreak === 0) currentStreak = tempStreak;
 
   // Today specific metrics
-  const completedTodayCount = tasks.filter((t) => t.history[todayStr]?.completed).length;
-  const todayRate = tasks.length > 0 ? Math.round((completedTodayCount / tasks.length) * 100) : 0;
+  const completedTodayCount = tasks.filter((t) => isTaskScheduledOnDate(t, todayStr) && t.history[todayStr]?.completed).length;
+  const totalTasksToday = tasks.filter((t) => isTaskScheduledOnDate(t, todayStr)).length;
+  const todayRate = totalTasksToday > 0 ? Math.round((completedTodayCount / totalTasksToday) * 100) : 0;
 
   return {
     totalLoggedDays: dates.length,
@@ -88,7 +93,7 @@ export function calculateOverallStats(tasks: RecurringTask[], daysRange = 30): O
     currentStreak,
     longestStreak: Math.max(longestStreak, currentStreak),
     completedTodayCount,
-    totalTasksToday: tasks.length,
+    totalTasksToday,
     todayRate,
   };
 }
@@ -98,7 +103,6 @@ export function calculateOverallStats(tasks: RecurringTask[], daysRange = 30): O
  */
 export function getDailyCommitmentHistory(tasks: RecurringTask[], daysRange = 30): DayCommitment[] {
   const dates = getPastDates(daysRange);
-  const totalTasks = tasks.length;
 
   return dates.map((dateStr) => {
     const d = new Date(dateStr);
@@ -106,8 +110,11 @@ export function getDailyCommitmentHistory(tasks: RecurringTask[], daysRange = 30
 
     let committed = 0;
     let missed = 0;
+    let scheduled = 0;
 
     tasks.forEach((t) => {
+      if (!isTaskScheduledOnDate(t, dateStr)) return;
+      scheduled += 1;
       if (t.history[dateStr]?.completed) {
         committed += 1;
       } else {
@@ -115,7 +122,7 @@ export function getDailyCommitmentHistory(tasks: RecurringTask[], daysRange = 30
       }
     });
 
-    const rate = totalTasks > 0 ? Math.round((committed / totalTasks) * 100) : 0;
+    const rate = scheduled > 0 ? Math.round((committed / scheduled) * 100) : 0;
     let status: 'committed' | 'missed' | 'partial' | 'future' = 'missed';
     if (rate >= 75) status = 'committed';
     else if (rate >= 40) status = 'partial';
@@ -146,19 +153,23 @@ export function getTaskStats(tasks: RecurringTask[], daysRange = 30): TaskCommit
     let currentStreak = 0;
 
     dates.forEach((date) => {
+      if (!isTaskScheduledOnDate(task, date)) return;
       const isDone = !!task.history[date]?.completed;
       if (isDone) {
         committedDays += 1;
         streak += 1;
         if (streak > bestStreak) bestStreak = streak;
       } else {
+        missedDays += 1;
         streak = 0;
       }
     });
 
     // reverse for current streak
     for (let i = dates.length - 1; i >= 0; i--) {
-      if (task.history[dates[i]]?.completed) {
+      const date = dates[i];
+      if (!isTaskScheduledOnDate(task, date)) continue;
+      if (task.history[date]?.completed) {
         currentStreak += 1;
       } else {
         break;
@@ -171,7 +182,7 @@ export function getTaskStats(tasks: RecurringTask[], daysRange = 30): TaskCommit
     return {
       task,
       committedDays,
-      missedDays: dates.length - committedDays,
+      missedDays,
       rate,
       currentStreak,
       longestStreak: bestStreak,
@@ -198,6 +209,7 @@ export function getWeekdayStats(tasks: RecurringTask[], daysRange = 30) {
     entry.count += 1;
 
     tasks.forEach((t) => {
+      if (!isTaskScheduledOnDate(t, dateStr)) return;
       if (t.history[dateStr]?.completed) {
         entry.committed += 1;
       } else {
