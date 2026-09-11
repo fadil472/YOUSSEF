@@ -15,8 +15,6 @@ import {
   ChevronLeft,
   Repeat,
   Zap,
-  Database,
-  Smartphone,
   Minus,
   Trash2,
 } from 'lucide-react';
@@ -73,32 +71,10 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
               month: 'long',
             })}
           </span>
-          <h1 className="text-xl font-bold text-zinc-100 mt-0.5">دوامة المهام والعادات</h1>
+          <h1 className="text-xl font-bold text-zinc-100 mt-0.5">مهام اليوم</h1>
         </div>
 
         <div className="flex items-center gap-1.5">
-          {onOpenInstall && (
-            <button
-              id="header-install-apk-btn"
-              onClick={onOpenInstall}
-              className="w-9 h-9 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-400 flex items-center justify-center transition-all active:scale-95 shadow-sm"
-              title="تثبيت التطبيق على الهاتف بصيغة APK"
-            >
-              <Smartphone size={15} />
-            </button>
-          )}
-
-          {onOpenBackup && (
-            <button
-              id="header-backup-btn"
-              onClick={onOpenBackup}
-              className="w-9 h-9 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 flex items-center justify-center transition-all active:scale-95 shadow-sm"
-              title="النسخ الاحتياطي وتصدير JSON"
-            >
-              <Database size={15} className="text-cyan-400" />
-            </button>
-          )}
-
           <button
             id="quick-add-task-header-btn"
             onClick={onOpenAddTask}
@@ -110,24 +86,21 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
         </div>
       </div>
 
-      {/* Daily Progress Card with Vortex Loop explanation */}
+      {/* Daily Progress Card - Simplified */}
       <div className="bg-gradient-to-br from-violet-950/40 via-[#161a28] to-[#121422] border border-violet-800/30 rounded-2xl p-4 mb-4 relative overflow-hidden shadow-lg">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
               <RotateCcw size={14} className="text-cyan-400 animate-spin-slow" />
-              دورة اليوم (تعود لنقطة الصفر)
+              دورة اليوم
             </span>
             <div className="text-2xl font-bold text-zinc-100 font-mono">
-              {completedTasks.length} <span className="text-zinc-500 text-sm font-normal">من {scheduledTasks.length} مهام</span>
+              {completedTasks.length} <span className="text-zinc-500 text-sm font-normal">من {scheduledTasks.length}</span>
             </div>
-            <p className="text-[11px] text-zinc-400 leading-snug max-w-[210px]">
-              عند إتمام المهمة اليوم، تُسجل في إحصائيات التزامك، ثم تعود للدوران من نقطة الصفر للغد.
-            </p>
           </div>
 
           {/* Circular Progress Indicator */}
-          <div className="relative w-18 h-18 flex items-center justify-center">
+          <div className="relative w-16 h-16 flex items-center justify-center">
             <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 36 36">
               <path
                 className="text-zinc-800"
@@ -148,7 +121,6 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
             </svg>
             <div className="absolute flex flex-col items-center">
               <span className="text-xs font-bold text-zinc-100 font-mono">{completionRate}%</span>
-              <span className="text-[8px] text-zinc-500">التزام</span>
             </div>
           </div>
         </div>
@@ -264,32 +236,14 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                     </div>
                   )}
 
-                  {/* Badges Bar */}
-                  <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    {/* Recurrence & Schedule label */}
-                    <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-zinc-800/80 text-cyan-300 font-mono">
-                      <Repeat size={10} />
-                      {getScheduleLabel(task)}
-                    </span>
-
-                    {/* Streak badge */}
+                  {/* Badges - Minimal */}
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                    {/* Streak badge only */}
                     {streak > 0 && (
-                      <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 font-mono font-semibold">
-                        <Flame size={11} className="text-amber-400" />
-                        {streak} يوم التزام
+                      <span className="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.5 rounded-md bg-amber-500/15 text-amber-300 font-mono font-semibold">
+                        <Flame size={9} className="text-amber-400" />
+                        {streak}
                       </span>
-                    )}
-
-                    {/* Obsidian Linked Note */}
-                    {task.linkedNoteTitle && (
-                      <button
-                        onClick={() => onSelectNote(task.linkedNoteTitle!)}
-                        className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md bg-violet-500/15 hover:bg-violet-500/25 text-violet-300 transition-colors"
-                        title="فتح ملاحظة أوبسيديان المرتبطة"
-                      >
-                        <span>[[{task.linkedNoteTitle}]]</span>
-                        <ArrowUpRight size={10} />
-                      </button>
                     )}
                   </div>
                 </div>
@@ -310,23 +264,26 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                   </button>
                 )}
 
-                {/* Reset or Actions */}
-                <div className="flex items-center gap-1">
+                {/* Actions Column - Always visible */}
+                <div className="flex flex-col items-center gap-1.5 mt-1">
+                  {/* Reset button for completed tasks (non-numeric) */}
                   {isDoneToday && !isNumericTask && (
                     <button
                       onClick={() => onResetTaskToZero(task.id)}
-                      className="p-1.5 text-zinc-500 hover:text-cyan-400 rounded-lg hover:bg-zinc-800 transition-colors"
+                      className="w-8 h-8 rounded-lg bg-zinc-800/50 hover:bg-cyan-900/30 text-zinc-400 hover:text-cyan-400 flex items-center justify-center transition-all"
                       title="تصفير المهمة يدوياً الآن"
                     >
-                      <RotateCcw size={13} />
+                      <RotateCcw size={14} />
                     </button>
                   )}
+                  
+                  {/* Delete button - always visible for all tasks */}
                   <button
                     onClick={() => onDeleteTask(task.id)}
-                    className="p-1.5 text-zinc-500 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors"
+                    className="w-8 h-8 rounded-lg bg-zinc-800/50 hover:bg-red-900/30 text-zinc-400 hover:text-red-400 flex items-center justify-center transition-all"
                     title="حذف المهمة نهائياً"
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={14} />
                   </button>
                 </div>
               </div>

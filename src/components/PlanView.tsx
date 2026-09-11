@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { loadPlan, savePlan, toggleStudySessionCompletion, isStudySessionCompletedToday, addCustomSession, removeCustomSession, updateCustomSession, getTodayPlanStats, WeeklyPlan, StudyPlanItem } from '../utils/planUtils';
+import { loadPlan, savePlan, toggleStudySessionCompletion, isStudySessionCompletedToday, addCustomSession, removeCustomSession, updateCustomSession, getTodayPlanStats, WeeklyPlan, StudyPlanItem, toggleCustomSessionCompletion } from '../utils/planUtils';
 import { BookOpen, Plus, Trash2, CheckCircle2, Circle, Clock, Edit2, Save, X } from 'lucide-react';
 
 interface PlanViewProps {
@@ -74,38 +74,28 @@ export const PlanView: React.FC<PlanViewProps> = ({ onOpenAddTask }) => {
 
   return (
     <div className="flex-1 flex flex-col overflow-y-auto bg-[#0f1118] p-4 pb-20">
-      {/* رأس الصفحة */}
-      <div className="flex items-center justify-between mb-4">
+      {/* رأس الصفحة - مبسط */}
+      <div className="mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">خطة الدراسة</h1>
-          <p className="text-sm text-zinc-400">نظّم جلساتك اليومية والأسبوعية</p>
+          <h1 className="text-xl font-bold text-white">خطة الدراسة</h1>
         </div>
-        <button
-          onClick={onOpenAddTask}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-600 text-white shadow-lg hover:bg-violet-500"
-        >
-          <Plus size={20} />
-        </button>
       </div>
 
-      {/* بطاقة التقدم اليومي */}
-      <div className="bg-gradient-to-br from-violet-950/40 via-[#161a28] to-[#121422] border border-violet-800/30 rounded-2xl p-4 mb-4 relative overflow-hidden">
+      {/* بطاقة التقدم اليومي - مصغرة */}
+      <div className="bg-gradient-to-br from-violet-950/40 via-[#161a28] to-[#121422] border border-violet-800/30 rounded-2xl p-3.5 mb-4 relative overflow-hidden shadow-lg">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <span className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
               <Clock size={14} className="text-cyan-400" />
               تقدم اليوم
             </span>
-            <div className="text-2xl font-bold text-zinc-100 font-mono">
+            <div className="text-xl font-bold text-zinc-100 font-mono">
               {stats.completedMinutes} <span className="text-zinc-500 text-sm font-normal">من {stats.totalMinutes} دقيقة</span>
             </div>
-            <p className="text-[11px] text-zinc-400">
-              {stats.completedSessions} من {stats.sessionsCount} جلسات
-            </p>
           </div>
 
           {/* مؤشر دائري */}
-          <div className="relative w-18 h-18 flex items-center justify-center">
+          <div className="relative w-16 h-16 flex items-center justify-center">
             <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 36 36">
               <path
                 className="text-zinc-800"
@@ -149,16 +139,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onOpenAddTask }) => {
                 {plan.studySession.duration} دقيقة لجميع المواد — الهاتف بعيد
               </p>
             </div>
-            <button
-              onClick={handleToggleMainSession}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                sessionCompleted
-                  ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/30'
-                  : 'border-2 border-zinc-600 hover:border-violet-400 text-transparent'
-              }`}
-            >
-              <CheckCircle2 size={24} />
-            </button>
           </div>
         </div>
       </div>
@@ -170,13 +150,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onOpenAddTask }) => {
             <Clock size={16} className="text-cyan-400" />
             جلسات إضافية
           </h2>
-          <button
-            onClick={() => setIsAddingSession(true)}
-            className="text-xs text-violet-400 hover:text-violet-300 flex items-center gap-1"
-          >
-            <Plus size={14} />
-            إضافة
-          </button>
         </div>
 
         {plan.customSessions.length === 0 ? (
@@ -226,20 +199,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onOpenAddTask }) => {
                       <option value="منخفضة">أولوية منخفضة</option>
                     </select>
                     <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={handleSaveEdit}
-                        className="flex-1 py-1 bg-emerald-600 text-white rounded-lg text-xs flex items-center justify-center gap-1"
-                      >
-                        <Save size={12} /> حفظ
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setEditingSession(null)}
-                        className="flex-1 py-1 bg-zinc-700 text-white rounded-lg text-xs flex items-center justify-center gap-1"
-                      >
-                        <X size={12} /> إلغاء
-                      </button>
                     </div>
                   </div>
                 ) : (
@@ -261,18 +220,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onOpenAddTask }) => {
                       </p>
                     </div>
                     <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => handleStartEditing(session)}
-                        className="p-1.5 text-zinc-400 hover:text-violet-400 rounded-lg"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSession(session.id)}
-                        className="p-1.5 text-zinc-400 hover:text-red-400 rounded-lg"
-                      >
-                        <Trash2 size={14} />
-                      </button>
                     </div>
                   </>
                 )}
@@ -337,18 +284,6 @@ export const PlanView: React.FC<PlanViewProps> = ({ onOpenAddTask }) => {
             </div>
 
             <div className="flex gap-2 mt-4">
-              <button
-                onClick={() => setIsAddingSession(false)}
-                className="flex-1 py-2 bg-zinc-800 text-white rounded-lg text-xs"
-              >
-                إلغاء
-              </button>
-              <button
-                onClick={handleAddCustomSession}
-                className="flex-1 py-2 bg-violet-600 text-white rounded-lg text-xs"
-              >
-                إضافة
-              </button>
             </div>
           </div>
         </div>

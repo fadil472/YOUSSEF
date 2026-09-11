@@ -86,6 +86,15 @@ export function updateCustomSession(sessionId: string, updates: Partial<StudyPla
   }
 }
 
+export function toggleCustomSessionCompletion(sessionId: string): void {
+  const plan = loadPlan();
+  const idx = plan.customSessions.findIndex((s) => s.id === sessionId);
+  if (idx !== -1) {
+    plan.customSessions[idx].completedToday = !plan.customSessions[idx].completedToday;
+    savePlan(plan);
+  }
+}
+
 export function getTodayPlanStats(): { totalMinutes: number; completedMinutes: number; sessionsCount: number; completedSessions: number } {
   const plan = loadPlan();
   const sessionCompleted = isStudySessionCompletedToday();
