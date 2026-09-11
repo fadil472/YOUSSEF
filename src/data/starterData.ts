@@ -1,4 +1,5 @@
 import { RecurringTask, ObsidianNote } from '../types';
+import { isTaskScheduledOnDate } from '../utils/taskScheduler';
 
 // Helper to format date YYYY-MM-DD
 export function formatDate(d: Date): string {
@@ -23,109 +24,103 @@ export function getPastDates(daysCount = 30): string[] {
 const past30Days = getPastDates(30);
 const todayStr = formatDate(new Date());
 
-// Helper to generate simulated history with realistic completion patterns
-function generateHistory(rate = 0.85, randomSeed = 1): Record<string, { completed: boolean; count: number }> {
+// Helper to generate simulated history with realistic completion patterns respecting schedule
+function generateHistory(
+  schedule: Pick<RecurringTask, 'recurrence' | 'activeDays'>,
+  targetCount: number,
+  rate: number,
+  seed: number
+): Record<string, { completed: boolean; count: number }> {
   const history: Record<string, { completed: boolean; count: number }> = {};
   past30Days.forEach((date, idx) => {
+    if (!isTaskScheduledOnDate(schedule, date)) return; // أيام الراحة: بلا سجل
     if (date === todayStr) {
-      // today will be pending or partially done
-      history[date] = { completed: (idx + randomSeed) % 2 === 0, count: 1 };
+      history[date] = { completed: false, count: 0 };
       return;
     }
-    // pseudo-deterministic based on index
-    const isMissed = (idx * 7 + randomSeed) % 10 > Math.floor(rate * 10);
-    const completed = !isMissed;
-    history[date] = {
-      completed,
-      count: completed ? 1 : 0,
-    };
+    const isMissed = (idx * 7 + seed) % 10 > Math.floor(rate * 10);
+    history[date] = { completed: !isMissed, count: isMissed ? 0 : targetCount };
   });
   return history;
 }
 
 export const STARTER_TASKS: RecurringTask[] = [
   {
-    id: 'task-reading',
-    title: 'قراءة 20 صفحة يومياً',
-    description: 'تتكرر كل يوم - عند إنهائها تعود لنقطة الصفر 00:00',
-    category: 'تطوير_ذاتي',
+    id: 'task-study-session',
+    title: 'جلسة الدراسة اليومية',
+    description: 'جلسة واحدة مركزة (90 دقيقة) لجميع المواد — الهاتف بعيد',
+    category: 'دراسة',
     icon: 'BookOpen',
-    color: '#8b5cf6', // violet
+    color: '#8b5cf6',
     recurrence: 'daily',
     targetCount: 1,
-    currentCountToday: 1,
-    linkedNoteTitle: 'خطة القراءة السنوية',
+    currentCountToday: 0,
+    linkedNoteTitle: 'خطة الدراسة للثانوي التأهيلي',
     createdAt: past30Days[0],
-    history: generateHistory(0.86, 2),
+    history: generateHistory({ recurrence: 'daily' }, 1, 0.85, 2),
   },
   {
-    id: 'task-quran',
-    title: 'الورد القرآني والأذكار',
-    description: 'دورة يومية متجددة للسكينة والروحانية',
-    category: 'روحانيات',
-    icon: 'Heart',
-    color: '#10b981', // emerald
-    recurrence: 'daily',
-    targetCount: 1,
-    currentCountToday: 1,
-    linkedNoteTitle: 'مذكرات التأمل والورد',
-    createdAt: past30Days[0],
-    history: generateHistory(0.93, 5),
-  },
-  {
-    id: 'task-workout',
-    title: 'الرياضة والنشاط البدني',
-    description: 'تمرين كارديو أو حديد لمدة 45 دقيقة',
+    id: 'task-calisthenics',
+    title: 'الكاليستنكس (تمارين وزن الجسم)',
+    description: 'تتبع مدة الجلسة بالدقائق — تصل 45 دقيقة وتُعتبر منجزة',
     category: 'صحة_ولياقة',
     icon: 'Dumbbell',
-    color: '#f59e0b', // amber
-    recurrence: 'daily',
-    targetCount: 1,
-    currentCountToday: 0, // not yet today
-    linkedNoteTitle: 'جدول اللياقة والتمارين',
+    color: '#f59e0b',
+    recurrence: 'custom',
+    activeDays: [1, 3, 5], // الإثنين، الأربعاء، الجمعة
+    targetCount: 45,
+    unit: 'دقيقة',
+    step: 5,
+    currentCountToday: 0,
+    linkedNoteTitle: 'برنامج الكاليستنكس للمبتدئين',
     createdAt: past30Days[0],
-    history: generateHistory(0.76, 3),
+    history: generateHistory({ recurrence: 'custom', activeDays: [1, 3, 5] }, 45, 0.8, 3),
   },
   {
-    id: 'task-deep-work',
-    title: 'جلسة عمل عميق (Deep Work)',
-    description: 'تركيز خالص 90 دقيقة دون أي مشتتات أو هاتف',
-    category: 'إنتاجية',
-    icon: 'Zap',
-    color: '#06b6d4', // cyan
+    id: 'task-french-vocab',
+    title: 'مفردات فرنسية جديدة',
+    description: 'تعلم 10 كلمات جديدة يومياً وسجلها في القاموس',
+    category: 'لغات',
+    icon: 'Languages',
+    color: '#3b82f6',
     recurrence: 'daily',
-    targetCount: 1,
-    currentCountToday: 1,
-    linkedNoteTitle: 'ملاحظات العمل المركز',
+    targetCount: 10,
+    unit: 'كلمة',
+    step: 1,
+    currentCountToday: 0,
+    linkedNoteTitle: 'قاموس الكلمات الفرنسية',
     createdAt: past30Days[0],
-    history: generateHistory(0.80, 7),
+    history: generateHistory({ recurrence: 'daily' }, 10, 0.8, 4),
   },
   {
-    id: 'task-water',
-    title: 'شرب 2 لتر ماء',
-    description: 'تجديد السوائل طوال اليوم، تصفر يومياً',
-    category: 'صحة_ولياقة',
-    icon: 'Droplet',
-    color: '#3b82f6', // blue
+    id: 'task-french-listening',
+    title: 'استماع بالفرنسية',
+    description: '15 دقيقة استماع: بودكاست مبسط أو فيديوهات تعليمية',
+    category: 'لغات',
+    icon: 'Headphones',
+    color: '#06b6d4',
     recurrence: 'daily',
-    targetCount: 1,
-    currentCountToday: 1,
+    targetCount: 15,
+    unit: 'دقيقة',
+    step: 5,
+    currentCountToday: 0,
     createdAt: past30Days[0],
-    history: generateHistory(0.90, 1),
+    history: generateHistory({ recurrence: 'daily' }, 15, 0.75, 5),
   },
   {
-    id: 'task-obsidian-review',
-    title: 'مراجعة ملاحظات أوبسيديان والزيتلكاستن',
-    description: 'ربط الأفكار وتدوين الملاحظات الذرية اليومية',
-    category: 'معرفة',
-    icon: 'Brain',
-    color: '#ec4899', // pink
+    id: 'task-french-science',
+    title: 'قراءة درس علمي بالفرنسية',
+    description: 'قراءة جزء من درس الرياضيات أو الفيزياء بالفرنسية',
+    category: 'لغات',
+    icon: 'GraduationCap',
+    color: '#10b981',
     recurrence: 'daily',
-    targetCount: 1,
-    currentCountToday: 0, // pending today
-    linkedNoteTitle: 'دليل أوبسيديان وإدارة المعرفة',
+    targetCount: 15,
+    unit: 'دقيقة',
+    step: 5,
+    currentCountToday: 0,
     createdAt: past30Days[0],
-    history: generateHistory(0.73, 4),
+    history: generateHistory({ recurrence: 'daily' }, 15, 0.7, 6),
   },
 ];
 

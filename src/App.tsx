@@ -7,6 +7,7 @@ import { TodayTasksView } from './components/TodayTasksView';
 import { StatsDashboardView } from './components/StatsDashboardView';
 import { NotesView } from './components/NotesView';
 import { CalendarLogView } from './components/CalendarLogView';
+import { PlanView } from './components/PlanView';
 import { AddTaskModal } from './components/AddTaskModal';
 import { BackupModal } from './components/BackupModal';
 import { InstallModal } from './components/InstallModal';
@@ -315,6 +316,12 @@ export default function App() {
         <CalendarLogView
           tasks={tasks}
           onToggleTaskForDate={handleToggleTaskForDate}
+        />
+      )}
+
+      {activeTab === 'plan' && (
+        <PlanView
+          onOpenAddTask={() => setIsAddTaskOpen(true)}
         />
       )}
 

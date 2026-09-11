@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { RecurringTask, ObsidianNote, RecurrenceType } from '../types';
 import { formatDate } from '../data/starterData';
-import { X, Plus, Repeat, BookOpen, Heart, Dumbbell, Zap, Droplet, Brain } from 'lucide-react';
+import { X, Plus, Repeat, BookOpen, Heart, Dumbbell, Zap, Droplet, Brain, Languages, GraduationCap } from 'lucide-react';
+import { getScheduleLabel } from '../utils/taskScheduler';
 
 interface AddTaskModalProps {
   isOpen: boolean;
@@ -21,6 +22,18 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
   const [category, setCategory] = useState('تطوير_ذاتي');
   const [linkedNoteTitle, setLinkedNoteTitle] = useState('');
   const [recurrence, setRecurrence] = useState<RecurrenceType>('daily');
+  const [activeDays, setActiveDays] = useState<number[]>([1, 3, 5]); // الإثنين، الأربعاء، الجمعة
+  const [targetCount, setTargetCount] = useState<number>(1);
+  const [unit, setUnit] = useState<string>('');
+  const [step, setStep] = useState<number>(1);
+
+  const DAY_NAMES = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+  const toggleDay = (dayIndex: number) => {
+    setActiveDays((prev) =>
+      prev.includes(dayIndex) ? prev.filter((d) => d !== dayIndex) : [...prev, dayIndex].sort()
+    );
+  };
 
   if (!isOpen) return null;
 
@@ -32,12 +45,15 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     const newTask: RecurringTask = {
       id: `task-${Date.now()}`,
       title: title.trim(),
-      description: description.trim() || 'تتكرر يومياً وتعود لنقطة الصفر عند إتمامها',
+      description: description.trim() || 'تتكرر حسب الجدول المحدد وتعود لنقطة الصفر عند إتمامها',
       category,
       icon: 'Zap',
       color: '#8b5cf6',
       recurrence,
-      targetCount: 1,
+      activeDays: recurrence === 'custom' || recurrence === 'weekly' ? activeDays : undefined,
+      targetCount,
+      unit: unit.trim() || undefined,
+      step,
       currentCountToday: 0,
       linkedNoteTitle: linkedNoteTitle.trim() || undefined,
       createdAt: todayStr,
@@ -50,8 +66,14 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
     setTitle('');
     setDescription('');
     setLinkedNoteTitle('');
+    setTargetCount(1);
+    setUnit('');
+    setStep(1);
+    setActiveDays([1, 3, 5]);
     onClose();
   };
+
+  const showDaySelector = recurrence === 'custom' || recurrence === 'weekly';
 
   return (
     <div
@@ -59,7 +81,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="bg-[#131622] border border-zinc-800 rounded-3xl w-full max-w-sm p-5 shadow-2xl text-right overflow-hidden"
+        className="bg-[#131622] border border-zinc-800 rounded-3xl w-full max-w-sm p-5 shadow-2xl text-right overflow-hidden max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
@@ -116,6 +138,7 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
                 <option value="daily">يومياً (تصفر 00:00)</option>
                 <option value="weekdays">أيام العمل فقط</option>
                 <option value="weekly">أسبوعياً</option>
+                <option value="custom">مخصص</option>
               </select>
             </div>
 
@@ -133,7 +156,80 @@ export const AddTaskModal: React.FC<AddTaskModalProps> = ({
                 <option value="صحة_ولياقة">صحة ولياقة</option>
                 <option value="إنتاجية">إنتاجية وعمل</option>
                 <option value="معرفة">معرفة وأوبسيديان</option>
+                <option value="دراسة">دراسة</option>
+                <option value="لغات">لغات</option>
               </select>
+            </div>
+          </div>
+
+          {showDaySelector && (
+            <div>
+              <label className="text-xs font-semibold text-zinc-300 block mb-2">
+                اختر أيام النشاط:
+              </label>
+              <div className="flex justify-between gap-1">
+                {DAY_NAMES.map((dayName, idx) => {
+                  const isActive = activeDays.includes(idx);
+                  return (
+                    <button
+                      key={dayName}
+                      type="button"
+                      onClick={() => toggleDay(idx)}
+                      className={`flex-1 py-2 rounded-lg text-xs font-medium transition-all ${
+                        isActive
+                          ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
+                          : 'bg-zinc-900 text-zinc-500 border border-zinc-700 hover:bg-zinc-800'
+                      }`}
+                    >
+                      {dayName.charAt(0)}
+                    </button>
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-zinc-500 mt-1.5">
+                المحدد: {getScheduleLabel({ recurrence, activeDays })}
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <label className="text-xs font-semibold text-zinc-300 block mb-1">
+                الهدف:
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={targetCount}
+                onChange={(e) => setTargetCount(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-violet-500 text-center"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-zinc-300 block mb-1">
+                الوحدة:
+              </label>
+              <input
+                type="text"
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+                placeholder="دقيقة، كلمة..."
+                className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-violet-500 text-center"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold text-zinc-300 block mb-1">
+                الخطوة:
+              </label>
+              <input
+                type="number"
+                min="1"
+                value={step}
+                onChange={(e) => setStep(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-full bg-zinc-900 border border-zinc-700/80 rounded-xl px-2.5 py-2 text-xs text-zinc-200 focus:outline-none focus:border-violet-500 text-center"
+              />
             </div>
           </div>
 
