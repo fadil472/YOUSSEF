@@ -18,6 +18,7 @@ import {
   Database,
   Smartphone,
   Minus,
+  Trash2,
 } from 'lucide-react';
 
 interface TodayTasksViewProps {
@@ -25,6 +26,7 @@ interface TodayTasksViewProps {
   onToggleTaskToday: (taskId: string) => void;
   onResetTaskToZero: (taskId: string) => void;
   onIncrementTaskToday: (taskId: string, delta: number) => void;
+  onDeleteTask: (taskId: string) => void;
   onOpenAddTask: () => void;
   onSelectNote: (noteTitle: string) => void;
   notes: ObsidianNote[];
@@ -37,6 +39,7 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
   onToggleTaskToday,
   onResetTaskToZero,
   onIncrementTaskToday,
+  onDeleteTask,
   onOpenAddTask,
   onSelectNote,
   onOpenBackup,
@@ -308,15 +311,24 @@ export const TodayTasksView: React.FC<TodayTasksViewProps> = ({
                 )}
 
                 {/* Reset or Actions */}
-                {isDoneToday && !isNumericTask && (
+                <div className="flex items-center gap-1">
+                  {isDoneToday && !isNumericTask && (
+                    <button
+                      onClick={() => onResetTaskToZero(task.id)}
+                      className="p-1.5 text-zinc-500 hover:text-cyan-400 rounded-lg hover:bg-zinc-800 transition-colors"
+                      title="تصفير المهمة يدوياً الآن"
+                    >
+                      <RotateCcw size={13} />
+                    </button>
+                  )}
                   <button
-                    onClick={() => onResetTaskToZero(task.id)}
-                    className="p-1.5 text-zinc-500 hover:text-cyan-400 rounded-lg hover:bg-zinc-800 transition-colors"
-                    title="تصفير المهمة يدوياً الآن"
+                    onClick={() => onDeleteTask(task.id)}
+                    className="p-1.5 text-zinc-500 hover:text-red-400 rounded-lg hover:bg-zinc-800 transition-colors"
+                    title="حذف المهمة نهائياً"
                   >
-                    <RotateCcw size={13} />
+                    <Trash2 size={13} />
                   </button>
-                )}
+                </div>
               </div>
             </div>
           );

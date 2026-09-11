@@ -114,6 +114,14 @@ export default function App() {
     );
   };
 
+  // Delete a task permanently
+  const handleDeleteTask = (taskId: string) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذه المهمة نهائياً؟ لا يمكن التراجع عن هذا الإجراء.')) {
+      return;
+    }
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  };
+
   // Increment/decrement task count for today (for numeric tasks)
   const handleIncrementTaskToday = (taskId: string, delta: number) => {
     setTasks((prev) =>
@@ -304,6 +312,7 @@ export default function App() {
           onToggleTaskToday={handleToggleTaskToday}
           onResetTaskToZero={handleResetTaskToZero}
           onIncrementTaskToday={handleIncrementTaskToday}
+          onDeleteTask={handleDeleteTask}
           onOpenAddTask={() => setIsAddTaskOpen(true)}
           onSelectNote={handleSelectNoteByTitle}
           notes={notes}
