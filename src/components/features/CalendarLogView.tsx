@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { RecurringTask } from '../types';
-import { formatDate, getPastDates } from '../data/starterData';
+import { RecurringTask } from '../../types';
+import { formatDate, getPastDates } from '../../data/starterData';
 import {
   Calendar as CalendarIcon,
   CheckCircle2,
