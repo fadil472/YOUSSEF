@@ -1,8 +1,58 @@
+```
+# Dependencies
 node_modules/
-build/
+
+# Build outputs
 dist/
-coverage/
+build/
+target/
+
+# TypeScript/JavaScript
+*.tsbuildinfo
+.next/
+.nuxt/
+.vuepress/dist
+.output
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Logs
 *.log
-.env*
-!.env.example
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Python (if mixed with TS/JS)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+.env
+.mypy_cache/
+.pytest_cache/
+.tox/
+.hypothesis/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+```

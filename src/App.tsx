@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { RecurringTask, ObsidianNote } from './types';
 import { STARTER_TASKS, STARTER_NOTES, formatDate } from './data/starterData';
-import { MobileFrame } from './components/MobileFrame';
-import { MobileBottomNav, MobileTab } from './components/MobileBottomNav';
-import { TodayTasksView } from './components/TodayTasksView';
-import { StatsDashboardView } from './components/StatsDashboardView';
-import { NotesView } from './components/NotesView';
-import { CalendarLogView } from './components/CalendarLogView';
-import { AddTaskModal } from './components/AddTaskModal';
-import { BackupModal } from './components/BackupModal';
-import { InstallModal } from './components/InstallModal';
-import { OfflineIndicator } from './components/OfflineIndicator';
+import { MobileFrame } from './components/layout/MobileFrame';
+import { MobileBottomNav, MobileTab } from './components/layout/MobileBottomNav';
+import { TodayTasksView } from './components/features/TodayTasksView';
+import { StatsDashboardView } from './components/features/StatsDashboardView';
+import { NotesView } from './components/features/NotesView';
+import { CalendarLogView } from './components/features/CalendarLogView';
+import { AddTaskModal } from './components/features/AddTaskModal';
+import { BackupModal } from './components/features/BackupModal';
+import { InstallModal } from './components/features/InstallModal';
+import { OfflineIndicator } from './components/ui/OfflineIndicator';
 import { Database, Smartphone } from 'lucide-react';
-
-const STORAGE_TASKS_KEY = 'obsidian_vortex_tasks_v2';
-const STORAGE_NOTES_KEY = 'obsidian_vortex_notes_v2';
+import { STORAGE_TASKS_KEY, STORAGE_NOTES_KEY } from './constants';
 
 export default function App() {
   // Load tasks from storage or fallback

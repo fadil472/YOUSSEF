@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ObsidianNote } from '../types';
+import { ObsidianNote } from '../../types';
 import {
   FileText,
   Plus,

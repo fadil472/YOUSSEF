@@ -1,5 +1,5 @@
 import React from 'react';
-import { Note, Folder, VaultStats } from '../types';
+import { Note, Folder, VaultStats } from '../../types';
 import {
   BarChart3,
   X,

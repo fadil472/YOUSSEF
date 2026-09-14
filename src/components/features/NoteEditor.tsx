@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Note, Folder } from '../types';
+import { Note, Folder } from '../../types';
 import {
   countWords,
   estimateReadingTime,

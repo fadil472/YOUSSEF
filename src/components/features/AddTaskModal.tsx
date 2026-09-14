@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { RecurringTask, ObsidianNote, RecurrenceType } from '../types';
-import { formatDate } from '../data/starterData';
+import { RecurringTask, ObsidianNote, RecurrenceType } from '../../types';
+import { formatDate } from '../../data/starterData';
 import { X, Plus, Repeat, BookOpen, Heart, Dumbbell, Zap, Droplet, Brain } from 'lucide-react';
 
 interface AddTaskModalProps {
