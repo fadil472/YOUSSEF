@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Note, Folder, VortexSettings, VortexMode } from '../types';
+import { Note, Folder, VortexSettings, VortexMode } from '../../types';
 import { buildGraphLinks } from '../utils/vaultUtils';
 import {
   Play,

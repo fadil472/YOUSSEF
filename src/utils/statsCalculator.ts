@@ -1,7 +1,8 @@
 import { RecurringTask, OverallStats, DayCommitment, TaskCommitmentStat } from '../types';
 import { formatDate, getPastDates } from '../data/starterData';
+import { ARABIC_DAYS, DEFAULT_COMMITMENT_THRESHOLD, DEFAULT_STREAK_THRESHOLD } from '../constants';
 
-const ARABIC_DAYS = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+export { ARABIC_DAYS };
 
 export function calculateOverallStats(tasks: RecurringTask[], daysRange = 30): OverallStats {
   const dates = getPastDates(daysRange);

@@ -1,23 +1,17 @@
-import { Note, Folder } from '../types';
+import { Note } from '../types';
+import { STARTER_FOLDERS } from './starterFolders';
 
-export const STARTER_FOLDERS: Folder[] = [
-  { id: 'core', name: 'الرؤية والأسس', color: '#6366f1' },
-  { id: 'pkm', name: 'إدارة المعرفة والإنتاجية', color: '#06b6d4' },
-  { id: 'ai-systems', name: 'الذكاء والأنظمة', color: '#a855f7' },
-  { id: 'philosophy', name: 'فلسفة وفكر', color: '#f59e0b' },
-  { id: 'science', name: 'الفيزياء والكون', color: '#10b981' },
-];
+export { STARTER_FOLDERS };
 
 export const STARTER_NOTES: Note[] = [
   {
     id: 'note-vortex',
     title: 'دوامة المعرفة',
-    folder: 'core',
+    folder: 'folder-daily',
     tags: ['دوامة', 'معرفة', 'نماذج_فكرية', 'رئيسية'],
     createdAt: Date.now() - 86400000 * 7,
     updatedAt: Date.now() - 86400000 * 1,
     pinned: true,
-    color: '#6366f1',
     content: `# دوامة المعرفة (The Knowledge Vortex)
 
 الدوامة ليست مجرد شكل هندسي في الفضاء، بل هي **آلية حيوية لتركيز الطاقة والمعلومات**. في أنظمة تدوين الملاحظات التقليدية، نضع الأفكار في صناديق جامدة أو مجلدات معزولة. أما في هذا النظام، تدور الأفكار في فلك مستمر يتحدد موقعه بمدى اتصاله وجاذبيته.
@@ -43,12 +37,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-zettelkasten',
     title: 'أسلوب الزيتلكاستن',
-    folder: 'pkm',
+    folder: 'folder-habits',
     tags: ['زيتلكاستن', 'ملاحظات', 'إنتاجية', 'طرق_تعلم'],
     createdAt: Date.now() - 86400000 * 6,
     updatedAt: Date.now() - 86400000 * 2,
     pinned: true,
-    color: '#06b6d4',
     content: `# أسلوب الزيتلكاستن (Zettelkasten)
 
 طريقة مبتكرة أبدعها عالم الاجتماع الألماني *نيكلاس لومان*، وتعتمد على تحويل تدوين الملاحظات إلى **شريك حوار تفاعلي** بدلاً من مجرد مستودع للأرشيف.
@@ -69,11 +62,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-pkm',
     title: 'إدارة المعرفة الشخصية',
-    folder: 'pkm',
+    folder: 'folder-habits',
     tags: ['pkm', 'العقل_الثاني', 'إنتاجية'],
     createdAt: Date.now() - 86400000 * 5,
     updatedAt: Date.now() - 86400000 * 2,
-    color: '#06b6d4',
+    pinned: false,
     content: `# إدارة المعرفة الشخصية (Personal Knowledge Management)
 
 بناء "عقل ثانٍ" رقمي قادر على تحرير العقل البيولوجي من عبء التخزين والتركيز على **التوليد والابتكار**.
@@ -90,11 +83,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-deep-work',
     title: 'الإنتاجية العميقة',
-    folder: 'pkm',
+    folder: 'folder-habits',
     tags: ['تركيز', 'إنتاجية', 'تدفق', 'تطوير'],
     createdAt: Date.now() - 86400000 * 4,
     updatedAt: Date.now() - 86400000 * 1,
-    color: '#06b6d4',
+    pinned: false,
     content: `# الإنتاجية العميقة (Deep Work)
 
 القدرة على التركيز بلا تشتت على مهام تتطلب جهداً ذهنياً عالياً، وهي المهارة الأكثر ندرة وقيمة في الاقتصاد المعاصر حسب *كال نيوبورت*.
@@ -111,12 +104,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-ai',
     title: 'الذكاء الاصطناعي',
-    folder: 'ai-systems',
+    folder: 'folder-goals',
     tags: ['ذكاء_اصطناعي', 'تقنية', 'مستقبل', 'أنظمة'],
     createdAt: Date.now() - 86400000 * 5,
     updatedAt: Date.now() - 86400000 * 1,
     pinned: true,
-    color: '#a855f7',
     content: `# الذكاء الاصطناعي (Artificial Intelligence)
 
 يمثل الذكاء الاصطناعي قفزة نوعية في تاريخ الأدوات الإدراكية للإنسان؛ إنه ليس مجرد حاسوب ينفذ تعليمات، بل منظومة قادرة على محاكاة الاستدلال وتوليد المعاني.
@@ -134,11 +126,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-deep-learning',
     title: 'التعلم العميق',
-    folder: 'ai-systems',
+    folder: 'folder-goals',
     tags: ['تعلم_عميق', 'خوارزميات', 'ذكاء_اصطناعي'],
     createdAt: Date.now() - 86400000 * 3,
     updatedAt: Date.now() - 86400000 * 2,
-    color: '#a855f7',
+    pinned: false,
     content: `# التعلم العميق (Deep Learning)
 
 فرع من فروع [[الذكاء الاصطناعي]] يعتمد على طبقات متتالية من الخلايا العصبية الاصطناعية لاستخلاص سمات مجردة ذات مستويات متصاعدة.
@@ -152,11 +144,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-systems-thinking',
     title: 'التفكير المنظومي',
-    folder: 'ai-systems',
+    folder: 'folder-goals',
     tags: ['أنظمة', 'تفكير', 'نماذج_ذهنية', 'تعقيد'],
     createdAt: Date.now() - 86400000 * 6,
     updatedAt: Date.now() - 86400000 * 3,
-    color: '#a855f7',
+    pinned: false,
     content: `# التفكير المنظومي (Systems Thinking)
 
 إطار لفهم العالم لا كأجزاء منفصلة، بل كشبكة متصلة من **العلاقات والتغذية الراجعة**.
@@ -172,11 +164,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-vortices-nature',
     title: 'الدوامات في الكون والطبيعة',
-    folder: 'science',
+    folder: 'folder-resources',
     tags: ['كون', 'فيزياء', 'طبيعة', 'حلزون'],
     createdAt: Date.now() - 86400000 * 5,
     updatedAt: Date.now() - 86400000 * 2,
-    color: '#10b981',
+    pinned: false,
     content: `# الدوامات في الكون والطبيعة (Vortices in Nature)
 
 الدوامة هي التوقيع الرياضي الأكثر انتشاراً في الكون:
@@ -193,11 +185,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-stoicism',
     title: 'الفلسفة الرواقية',
-    folder: 'philosophy',
+    folder: 'folder-resources',
     tags: ['فلسفة', 'رواقية', 'حكمة', 'وعي'],
     createdAt: Date.now() - 86400000 * 7,
     updatedAt: Date.now() - 86400000 * 4,
-    color: '#f59e0b',
+    pinned: false,
     content: `# الفلسفة الرواقية (Stoicism)
 
 مدرسة فلسفية هلنستية أسسها *زينون الرواقي*، وركزت على الفضيلة والحكمة وقبول مسار الطبيعة والكون.
@@ -215,11 +207,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-spatial-memory',
     title: 'الذاكرة المكانية',
-    folder: 'core',
+    folder: 'folder-daily',
     tags: ['ذاكرة', 'إدراك', 'ملاذ_الذاكرة'],
     createdAt: Date.now() - 86400000 * 4,
     updatedAt: Date.now() - 86400000 * 1,
-    color: '#6366f1',
+    pinned: false,
     content: `# الذاكرة المكانية وقصور العقل (Spatial Memory)
 
 تطور دماغ الإنسان ليتذكر الأماكن والمسافات والحركات بكفاءة تفوق بكثير تذكر النصوص المجردة.
@@ -235,11 +227,11 @@ export const STARTER_NOTES: Note[] = [
   {
     id: 'note-orphan-spark',
     title: 'ومضة فكرية: تناغم الأوتار الكونية',
-    folder: 'science',
+    folder: 'folder-archive',
     tags: ['ومضة', 'مسودة', 'أفكار_حرة'],
     createdAt: Date.now() - 86400000 * 1,
     updatedAt: Date.now() - 86400000 * 1,
-    color: '#10b981',
+    pinned: false,
     content: `# ومضة فكرية: تناغم الأوتار الكونية
 
 ملاحظة وليدة دون روابط خارجية بعد! تسجل فكرة طارئة عن نظرية الأوتار والاهتزازات الأولية للمادة.

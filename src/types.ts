@@ -8,19 +8,32 @@ export interface RecurringTask {
   icon: string;
   color: string;
   recurrence: RecurrenceType;
-  targetCount: number; // e.g. 1 for boolean, or 5 for glasses/pomodoros
-  currentCountToday: number; // resets to 0 each cycle!
+  targetCount: number;
+  currentCountToday: number;
   linkedNoteTitle?: string;
-  createdAt: string; // YYYY-MM-DD
-  history: Record<string, { completed: boolean; count: number; note?: string }>; // date string 'YYYY-MM-DD' -> status
+  createdAt: string;
+  history: Record<string, { completed: boolean; count: number; note?: string }>;
 }
 
-export interface ObsidianNote {
+export interface Folder {
+  id: string;
+  name: string;
+  parentId?: string;
+  icon?: string;
+  color?: string;
+}
+
+export interface Note {
   id: string;
   title: string;
   content: string;
+  folder: string;
   tags: string[];
+  pinned: boolean;
+  createdAt: number;
   updatedAt: number;
+  links?: string[]; // outbound wiki links [[...]]
+  backlinks?: string[]; // inbound wiki links
 }
 
 export interface OverallStats {
@@ -51,76 +64,5 @@ export interface TaskCommitmentStat {
   rate: number;
   currentStreak: number;
   longestStreak: number;
-}
-
-// Legacy types for compatibility
-export interface Note {
-  id: string;
-  title: string;
-  content: string;
-  folder?: string;
-  tags: string[];
-  createdAt: number;
-  updatedAt: number;
-  color?: string;
-  pinned?: boolean;
-}
-
-export interface Folder {
-  id: string;
-  name: string;
-  color: string;
-  icon?: string;
-}
-
-export interface NodeLink {
-  sourceId: string;
-  targetId: string;
-  isReciprocal?: boolean;
-  source?: string;
-  target?: string;
-  label?: string;
-}
-
-export type VortexMode = 'galaxy' | 'gravity-well' | 'concentric';
-
-export interface VortexSettings {
-  rotationSpeed: number;
-  zoom: number;
-  pullForce: number;
-  mode: VortexMode;
-  showLabels: boolean;
-  minLinksFilter: number;
-}
-
-export interface VaultStats {
-  totalNotes: number;
-  totalLinks: number;
-  totalWords: number;
-  readingTimeMinutes: number;
-  avgWordsPerNote?: number;
-  graphDensity?: number;
-  density?: number;
-  reciprocityRate: number;
-  orphanNotesCount?: number;
-  orphanCount?: number;
-  topConnectedNotes?: { id: string; title: string; count: number }[];
-  topConnected?: { note?: Note; id?: string; title?: string; count: number; folder?: string }[];
-  orphans?: Note[];
-  tagFrequency?: { tag: string; count: number }[];
-  tagDistribution?: { tag: string; count: number }[];
-  folderDistribution?: { folder?: string; folderName?: string; count: number; percentage?: number; color: string }[];
-  vortexRings?: {
-    core: number;
-    innerOrbit: number;
-    outerOrbit: number;
-    periphery: number;
-  };
-  gravityRings?: {
-    core: { count: number; label: string; notes: Note[] };
-    inner: { count: number; label: string; notes: Note[] };
-    outer: { count: number; label: string; notes: Note[] };
-    periphery: { count: number; label: string; notes: Note[] };
-  };
 }
 
