@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { RecurringTask, ObsidianNote } from '../types';
-import { formatDate } from '../data/starterData';
+import { RecurringTask, ObsidianNote } from '../../types';
+import { formatDate } from '../../data/starterData';
 import {
   X,
   Download,

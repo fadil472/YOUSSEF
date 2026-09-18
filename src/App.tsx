@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { RecurringTask, ObsidianNote } from './types';
+import { RecurringTask, Note, Folder } from './types';
 import { STARTER_TASKS, STARTER_NOTES, formatDate } from './data/starterData';
-import { MobileFrame } from './components/MobileFrame';
-import { MobileBottomNav, MobileTab } from './components/MobileBottomNav';
-import { TodayTasksView } from './components/TodayTasksView';
-import { StatsDashboardView } from './components/StatsDashboardView';
-import { NotesView } from './components/NotesView';
-import { CalendarLogView } from './components/CalendarLogView';
-import { AddTaskModal } from './components/AddTaskModal';
-import { BackupModal } from './components/BackupModal';
-import { InstallModal } from './components/InstallModal';
-import { OfflineIndicator } from './components/OfflineIndicator';
+import { STARTER_FOLDERS } from './data/starterFolders';
+import { MobileFrame } from './components/layout/MobileFrame';
+import { MobileBottomNav, MobileTab } from './components/layout/MobileBottomNav';
+import { TodayTasksView } from './components/features/TodayTasksView';
+import { StatsDashboardView } from './components/features/StatsDashboardView';
+import { NotesView } from './components/features/NotesView';
+import { CalendarLogView } from './components/features/CalendarLogView';
+import { AddTaskModal } from './components/features/AddTaskModal';
+import { BackupModal } from './components/features/BackupModal';
+import { InstallModal } from './components/features/InstallModal';
+import { OfflineIndicator } from './components/ui/OfflineIndicator';
 import { Database, Smartphone } from 'lucide-react';
-
-const STORAGE_TASKS_KEY = 'obsidian_vortex_tasks_v2';
-const STORAGE_NOTES_KEY = 'obsidian_vortex_notes_v2';
+import { STORAGE_TASKS_KEY, STORAGE_NOTES_KEY } from './constants';
 
 export default function App() {
   // Load tasks from storage or fallback
@@ -32,7 +31,7 @@ export default function App() {
   });
 
   // Load notes from storage or fallback
-  const [notes, setNotes] = useState<ObsidianNote[]>(() => {
+  const [notes, setNotes] = useState<Note[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_NOTES_KEY);
       if (saved) {
@@ -45,8 +44,11 @@ export default function App() {
     return STARTER_NOTES;
   });
 
+  // Folders state
+  const [folders] = useState<Folder[]>(STARTER_FOLDERS);
+
   const [activeTab, setActiveTab] = useState<MobileTab>('today');
-  const [selectedNoteTitle, setSelectedNoteTitle] = useState<string | null>(null);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [isAddTaskOpen, setIsAddTaskOpen] = useState<boolean>(false);
   const [isBackupOpen, setIsBackupOpen] = useState<boolean>(false);
   const [isInstallOpen, setIsInstallOpen] = useState<boolean>(false);
@@ -139,27 +141,30 @@ export default function App() {
   };
 
   // Notes management
-  const handleSelectNoteByTitle = (title: string | null) => {
-    setSelectedNoteTitle(title);
-    if (title) {
+  const handleSelectNote = (noteId: string | null) => {
+    setSelectedNoteId(noteId);
+    if (noteId) {
       setActiveTab('notes');
     }
   };
 
-  const handleUpdateNote = (updated: ObsidianNote) => {
+  const handleUpdateNote = (updated: Note) => {
     setNotes((prev) => prev.map((n) => (n.id === updated.id ? updated : n)));
   };
 
-  const handleCreateNote = (title: string) => {
-    const newNote: ObsidianNote = {
+  const handleCreateNote = (title: string, folderId: string = 'folder-daily') => {
+    const newNote: Note = {
       id: `note-${Date.now()}`,
       title,
+      folder: folderId,
       tags: ['ملاحظة_جديدة'],
-      updatedAt: Date.now(),
       content: `# ${title}\n\nسجل تفاصيل وملاحظات هذه العادة أو المهمة هنا...\n\n- [ ] خطوة عملية\n`,
+      pinned: false,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     };
     setNotes([newNote, ...notes]);
-    setSelectedNoteTitle(title);
+    setSelectedNoteId(newNote.id);
   };
 
   const handleDeleteNote = (noteId: string) => {
@@ -168,7 +173,7 @@ export default function App() {
 
   // Import Backup Data (Replace or Smart Merge)
   const handleImportData = (
-    data: { tasks: RecurringTask[]; notes: ObsidianNote[] },
+    data: { tasks: RecurringTask[]; notes: Note[] },
     mode: 'replace' | 'merge'
   ) => {
     if (mode === 'replace') {
@@ -185,7 +190,6 @@ export default function App() {
         prev.forEach((t) => mergedMap.set(t.id, { ...t }));
         
         data.tasks.forEach((incoming) => {
-          // Check if already exists by id or title
           const existingKey = Array.from(mergedMap.keys()).find(
             (k) => k === incoming.id || mergedMap.get(k)?.title === incoming.title
           );
@@ -207,7 +211,7 @@ export default function App() {
       });
 
       setNotes((prev) => {
-        const mergedMap = new Map<string, ObsidianNote>();
+        const mergedMap = new Map<string, Note>();
         prev.forEach((n) => mergedMap.set(n.id, { ...n }));
         data.notes.forEach((incoming) => {
           const existingKey = Array.from(mergedMap.keys()).find(
@@ -215,7 +219,6 @@ export default function App() {
           );
           if (existingKey) {
             const existing = mergedMap.get(existingKey)!;
-            // Keep the one with newer updatedAt
             if ((incoming.updatedAt || 0) > (existing.updatedAt || 0)) {
               mergedMap.set(existingKey, incoming);
             }
@@ -285,7 +288,7 @@ export default function App() {
           onToggleTaskToday={handleToggleTaskToday}
           onResetTaskToZero={handleResetTaskToZero}
           onOpenAddTask={() => setIsAddTaskOpen(true)}
-          onSelectNote={handleSelectNoteByTitle}
+          onSelectNote={handleSelectNote}
           notes={notes}
           onOpenBackup={() => setIsBackupOpen(true)}
           onOpenInstall={() => setIsInstallOpen(true)}
@@ -303,8 +306,9 @@ export default function App() {
       {activeTab === 'notes' && (
         <NotesView
           notes={notes}
-          selectedNoteTitle={selectedNoteTitle}
-          onSelectNote={handleSelectNoteByTitle}
+          folders={folders}
+          selectedNoteId={selectedNoteId}
+          onSelectNote={handleSelectNote}
           onUpdateNote={handleUpdateNote}
           onCreateNote={handleCreateNote}
           onDeleteNote={handleDeleteNote}

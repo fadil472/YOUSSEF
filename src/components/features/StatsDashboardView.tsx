@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { RecurringTask } from '../types';
+import { RecurringTask } from '../../types';
 import {
   calculateOverallStats,
   getDailyCommitmentHistory,
   getTaskStats,
   getWeekdayStats,
-} from '../utils/statsCalculator';
+} from '../../utils/statsCalculator';
 import {
   PieChart,
   Pie,
